@@ -18,4 +18,6 @@ urlpatterns = [
 
     url(r'^quizavg/$', views.QuizAvgView.as_view(), name="quizavg"),
     url(r'^studentavg/$', views.StudentAvgView.as_view(), name="studentavg"),
+    url(r'^profile/$', views.ProfileView.as_view(), name="profile"),
+    #url(r'^profile/(?P<student_id>\d+)/$', views.ProfileView.as_view(), name="profile"),
 ]

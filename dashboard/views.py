@@ -1,12 +1,33 @@
 from django.views.generic import TemplateView
 from . import plots
 
+
+class ProfileView(TemplateView):
+    template_name = "components/profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        student_id = self.request.GET.get('student_id')
+        context['student_id'] = student_id
+        context['quiz_avg_student'] = plots.fake_quiz_avg()
+        context['quiz_attempts_student'] = plots.plot1d()
+        context['quiz_time_student'] = plots.plot1d()
+        #context['quiz_avg_student'] = plots.quiz_avg_student(student_id)
+        #context['quiz_attempts_student'] = plots.quiz_attempts_student(student_id)
+        #context['quiz_time_student'] = plots.quiz_time_student(student_id)
+        context['student_id'] = self.request.GET.get('student_id')
+        return context
+
+
 class IndexView(TemplateView):
     template_name = "components/index.html"
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context.update({'title': "Dashboard"})
+        context['quiz_avg_class'] = plots.fake_quiz_avg()
+        context['quiz_attempts_class'] = plots.plot1d()
+        context['quiz_time_class'] = plots.plot1d()
         return context
 
 
@@ -15,7 +36,7 @@ class BlankView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(BlankView, self).get_context_data(**kwargs)
-        context['plot'] = plots.plot1d()
+        context['quiz_attempts_plot'] = plots.plot1d()
         return context
 
 class QuizAvgView(TemplateView):

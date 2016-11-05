@@ -1,0 +1,71 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header"> {{student_id}} </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <img src="../../static/images/placeholder-profile-photo.png" class="profile-pic"/>
+    </div>
+
+    <div class="row">
+        <!-- /.col-lg-8 -->
+        <div class="col-lg-8">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Quiz Grades
+                </div>
+                <div class="panel-body">
+                    <div id="morris-donut-chart">{{quiz_avg_student|safe}}</div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel .chat-panel -->
+        </div>
+    </div>
+    <div class="row">
+        <!-- /.col-lg-8 -->
+        <div class="col-lg-8">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Quiz Attempts
+                </div>
+                <div class="panel-body">
+                    <div id="morris-donut-chart">{{quiz_attempts_student|safe}}</div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel .chat-panel -->
+        </div>
+    </div>
+    <div class="row">
+        <!-- /.col-lg-8 -->
+        <div class="col-lg-8">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Quiz Completion Time
+                </div>
+                <div class="panel-body">
+                    <div id="morris-donut-chart">{{quiz_time_student|safe}}</div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel .chat-panel -->
+        </div>
+    </div>
+        <!-- /.col-lg-4 -->
+        <!-- <div class="col-lg-12">
+            <h1 class="page-header"> Semester Grades</h1>
+        </div>
+        <div class="panel panel-default">
+        {{plot|safe}}
+        </div>-->
+</div>
+
+{% endblock content %}

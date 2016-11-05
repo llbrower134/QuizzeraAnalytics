@@ -352,3 +352,9 @@ table.dataTable thead .sorting:after {
 .panel-yellow a:hover {
     color: #df8a13;
 }
+
+.profile-pic {
+    height: 50%;
+    width: 50%;
+    padding-bottom: 25px;
+}

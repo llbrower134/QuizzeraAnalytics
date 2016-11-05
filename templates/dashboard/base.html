@@ -36,12 +36,13 @@
                 <ul class="nav" id="side-menu">
                     <li class="sidebar-search">
                         <div class="input-group custom-search-form">
-                            <input type="text" class="form-control" placeholder="Search...">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
+                            <form class="form-inline" id="user_form" method="get" action="{% url 'dashboard:profile' %}">
+                                {% csrf_token %}
+                                <!-- Display the search form elements here -->
+                                <input class="form-control" type="text" size="50" name="student_id" value="" id="student_id" />
+                                <input class="btn btn-primary" type="submit" name="submit" value="Search" />
+                                <br />
+                            </form>
                         </div>
                         <!-- /input-group -->
                     </li>
@@ -56,7 +57,10 @@
                                 <a href="{% url 'dashboard:quizavg' %}">Quiz Averages</a>
                             </li>
                             <li>
-                                <a href="{% url 'dashboard:studentavg' %}">Student Scores</a>
+                                <a href="{% url 'dashboard:studentavg' %}">Student Averages</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'dashboard:profile' %}">Profile</a>
                             </li>
                             <!-- <li>
                                 <a href="{% url 'dashboard:flot' %}">Flot Charts</a>

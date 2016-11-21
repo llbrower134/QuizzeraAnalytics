@@ -1,22 +1,8 @@
 from django.views.generic import TemplateView
 from . import plots
-
-
-class ProfileView(TemplateView):
-    template_name = "components/profile.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(ProfileView, self).get_context_data(**kwargs)
-        student_id = self.request.GET.get('student_id')
-        context['student_id'] = student_id
-        context['quiz_avg_student'] = plots.fake_quiz_avg()
-        context['quiz_attempts_student'] = plots.plot1d()
-        context['quiz_time_student'] = plots.plot1d()
-        #context['quiz_avg_student'] = plots.quiz_avg_student(student_id)
-        #context['quiz_attempts_student'] = plots.quiz_attempts_student(student_id)
-        #context['quiz_time_student'] = plots.quiz_time_student(student_id)
-        context['student_id'] = self.request.GET.get('student_id')
-        return context
+from . import search
+from . import datafetch
+import random
 
 
 class IndexView(TemplateView):
@@ -25,11 +11,66 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context.update({'title': "Dashboard"})
-        context['quiz_avg_class'] = plots.fake_quiz_avg()
-        context['quiz_attempts_class'] = plots.plot1d()
-        context['quiz_time_class'] = plots.plot1d()
+
+        quiz_data = datafetch.get_quiz_data()
+        attempt_data = datafetch.get_attempt_data()
+
+        context['quiz_avg_class'] = plots.avgscore_class_plot(attempt_data)
+        context['quiz_attempts_class'] = plots.attempts_class_plot(attempt_data)
+        context['quiz_time_class'] = plots.completion_time_class_plot(attempt_data)
         return context
 
+class ProfileView(TemplateView):
+    template_name = "components/profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        student_id = self.request.GET.get('student_id')
+
+        quiz_data = datafetch.get_quiz_data()
+        attempt_data = datafetch.get_attempt_data()
+
+        context['student_name'] = datafetch.get_student_name(student_id)
+        #context['student_name'] = "Lukas Brower"
+        context['net_id'] = student_id
+        #context['class_year'] = search.get_student_class(student_id)
+        context['class_year'] = "2017"
+        #context['major'] = search.get_student_major(student_id)
+        #context['image'] =
+        context['quiz_avg'] = random.randrange(70, 100)
+        context['quiz_avg_student'] = plots.avgscore_student_plot(attempt_data, student_id)
+        context['quiz_attempts_student'] = plots.attempts_student_plot(attempt_data, student_id)
+        context['quiz_time_student'] = plots.completion_time_student_plot(attempt_data, student_id)
+        context['student_id'] = self.request.GET.get('student_id')
+        return context
+
+##################### Visual Specific Pages #####################
+
+class QuizAvgView(TemplateView):
+    template_name = "components/quizavg.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(QuizAvgView, self).get_context_data(**kwargs)
+        context['plot'] = plots.avg_score_class()
+        return context
+
+class QuizAttemptsView(TemplateView):
+    template_name = "components/quizavg.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(QuizAvgView, self).get_context_data(**kwargs)
+        context['plot'] = plots.attempts_class()
+        return context
+
+class QuizTimeView(TemplateView):
+    template_name = "components/quizavg.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(QuizAvgView, self).get_context_data(**kwargs)
+        context['plot'] = plots.completion_time_class()
+        return context
+
+###############################################################
 
 class BlankView(TemplateView):
     template_name = "components/blank.html"
@@ -39,21 +80,6 @@ class BlankView(TemplateView):
         context['quiz_attempts_plot'] = plots.plot1d()
         return context
 
-class QuizAvgView(TemplateView):
-    template_name = "components/quizavg.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(QuizAvgView, self).get_context_data(**kwargs)
-        context['plot'] = plots.fake_quiz_avg()
-        return context
-
-class StudentAvgView(TemplateView):
-    template_name = "components/studentavg.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(StudentAvgView, self).get_context_data(**kwargs)
-        context['plot'] = plots.fake_student_avg()
-        return context
 
 class ButtonsView(TemplateView):
     template_name = "components/buttons.html"

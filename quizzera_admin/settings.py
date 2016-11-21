@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cas_ng',
     'dashboard',
 )
 
@@ -35,9 +36,25 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+
+    # CAS (Central Authentication Service) Middleware
+    'django_cas_ng.middleware.CASMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'django_cas_ng.backends.CASBackend',
+)
+
+# volatile
+# URL for CAS Server. If running on an OIT-approved host,
+# 'https://fed.princeton.edu/cas/'' can be used instead. However, the
+# CS Department's server allows any host to use the authnetication
+# service.
+CAS_SERVER_URL = 'https://cast.cs.princeton.edu/'
 
 ROOT_URLCONF = 'quizzera_admin.urls'
 

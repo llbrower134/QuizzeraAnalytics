@@ -4,9 +4,12 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+* {
+    font-family: "Helvetica";
+}
+
 body {
     background-color: #f8f8f8;
-    font-family: "Helvetica"
 }
 
 #wrapper {

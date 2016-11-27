@@ -1,5 +1,5 @@
 import plotly.graph_objs as go
-import numpy as np
+import numpy
 import glob
 import os
 import datetime
@@ -67,6 +67,26 @@ def completion_time_class_data(attempt_data):
 
     return (list(times.keys()), list(times.values()))
 
+def stddev_class_data(attempt_data):
+    # Map questions to users, and users to all grades for that question
+    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(list))
+
+    for attempt in attempt_data:
+        title = attempt['question']['title']
+        user = attempt['user']['username']
+        grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
+        quiz_grades[title][user].append(grade)
+
+    # Find averages by only considering the highest score across each student's attempts
+    averages = collections.defaultdict(list)
+    stddev = {}
+    for k, v in quiz_grades.items():
+        for k2, v2 in v.items():
+            averages[k].append(max(v2))
+        stddev[k] = numpy.std(averages[k])
+
+    return (list(stddev.keys()), list(stddev.values()))
+
 
 def avgscore_class_plot(attempt_data):
     plot_data = avgscore_class_data(attempt_data)
@@ -78,6 +98,10 @@ def attempts_class_plot(attempt_data):
 
 def completion_time_class_plot(attempt_data):
     plot_data = completion_time_class_data(attempt_data)
+    return get_class_plot(plot_data, True)
+
+def stddev_class_plot(attempt_data):
+    plot_data = stddev_class_data(attempt_data)
     return get_class_plot(plot_data, True)
 
 

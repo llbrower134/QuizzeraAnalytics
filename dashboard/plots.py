@@ -7,6 +7,7 @@ import requests
 import collections
 from wsse.client.requests.auth import WSSEAuth
 from plotly.offline import plot
+from sklearn.cluster import KMeans
 
 
 def avgscore_class_data(attempt_data):
@@ -86,6 +87,70 @@ def stddev_class_data(attempt_data):
         stddev[k] = numpy.std(averages[k])
 
     return (list(stddev.keys()), list(stddev.values()))
+
+def kmeans_class_plot(attempt_data):
+    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(list))
+    quiz_attempts = collections.defaultdict(lambda: collections.defaultdict(int))
+
+    for attempt in attempt_data:
+        title = attempt['question']['title']
+        user = attempt['user']['username']
+        grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
+        quiz_grades[user][title].append(grade)
+        quiz_attempts[user][title] += 1
+
+    # Find averages by only considering the highest score across each student's attempts
+    averages = {}
+    for k, v in quiz_grades.items():
+        averages[k] = 0
+        for k2, v2 in v.items():
+            averages[k] += max(v2)
+        averages[k] = round((averages[k] / len(v)), 2)
+
+    attempts = {}
+    for k, v in quiz_attempts.items():
+        attempts[k] = 0
+        for k2, v2 in v.items():
+            attempts[k] += v2
+        attempts[k] = round((float(attempts[k]) / len(v.items())), 2)
+
+    coords = [[list(averages.values())[i], list(attempts.values())[i]] for i in range(len(averages))]
+    kmeans = KMeans(n_clusters=3, max_iter = 1000, n_init = 100).fit(coords)
+
+
+    colors = ['red', 'green', 'blue']
+    marker_colors = [colors[i] for i in kmeans.labels_]
+    trace = go.Scatter(
+        x = list(attempts.values()),
+        y = list(averages.values()),
+        text= list(averages.keys()),
+        mode = 'markers',
+        marker = dict(
+            size = 10,
+            color = marker_colors,
+            line = dict(
+                width = 2,
+            )
+        )
+    )
+
+    data = [trace]
+
+    layout = go.Layout(
+        xaxis=dict(
+            autorange=True,
+            title='Average Number of Attempts'
+        ),
+        yaxis=dict(
+            autorange=True,
+            title='Average Score'
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    return plot_div
+
 
 
 def avgscore_class_plot(attempt_data):

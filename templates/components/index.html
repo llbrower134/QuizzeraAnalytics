@@ -22,34 +22,55 @@
 </div>
 <!-- /.row -->
 <div class="row">
-    <div class="col-lg-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Average Quiz Scores
-                <div>{{quiz_avg_class|safe}}</div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Average Quiz Scores
+                    <div>{{quiz_avg_class|safe}}</div>
+                </div>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Standard Deviation
-                <div>{{quiz_stddev_class|safe}}</div>
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Standard Deviation
+                    <div>{{quiz_stddev_class|safe}}</div>
+                </div>
+                <!-- /.panel-body -->
             </div>
-            <!-- /.panel-body -->
         </div>
         <!-- /.panel -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Average Quiz Attempts Per Student
-                <div>{{quiz_attempts_class|safe}}</div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Average Quiz Attempts Per Student
+                        <div>{{quiz_attempts_class|safe}}</div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
             </div>
-            <!-- /.panel-body -->
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Average Quiz Completion Time
+                        <div>{{quiz_time_class|safe}}</div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+            </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Average Quiz Completion Time
-                <div>{{quiz_time_class|safe}}</div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Grade Clusters
+                        <div>{{clusters_class|safe}}</div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
             </div>
-            <!-- /.panel-body -->
         </div>
     </div>
 </div>

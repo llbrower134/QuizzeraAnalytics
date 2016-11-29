@@ -14,8 +14,21 @@
             <a class="navbar-brand" href="{% url 'dashboard:index' %}">Quizzera Analytics</a>
         </div>
         <!-- /.navbar-header -->
+        <ul class="nav navbar-nav">
+            <li>
+                <a href="{% url 'dashboard:index' %}">Dashboard</a>
+            </li>
+        </ul>
 
         <ul class="nav navbar-top-links navbar-right">
+            <!-- Search Bar -->
+            <form class="navbar-form navbar-left" id="user_form" method="get" action="{% url 'dashboard:profile' %}">
+                    {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control search-input" type="text" size="50" name="student_id" placeholder="Search by NetID" id="student_id" />
+                </div>
+                <input class="btn btn-primary" type="submit" name="submit" value="Search" />
+            </form>
             <!-- /.dropdown-user-->
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -30,88 +43,6 @@
             <!-- /.dropdown -->
         </ul>
         <!-- /.navbar-top-links -->
-
-        <div class="navbar-default sidebar" role="navigation">
-            <div class="sidebar-nav navbar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li class="sidebar-search">
-                        <div class="input-group custom-search-form">
-                            <form class="form-inline" id="user_form" method="get" action="{% url 'dashboard:profile' %}">
-                                {% csrf_token %}
-                                <!-- Display the search form elements here -->
-                                <input class="form-control" type="text" size="50" name="student_id" placeholder="Search by NetID" id="student_id" />
-                                <input class="btn btn-primary" type="submit" name="submit" value="Search" />
-                                <br />
-                            </form>
-                        </div>
-                        <!-- /input-group -->
-                    </li>
-
-                    <li>
-                        <a href="{% url 'dashboard:index' %}"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="{% url 'dashboard:quizavg' %}">Quiz Averages</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'dashboard:quizattempts' %}">Quiz Attempts</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'dashboard:quiztime' %}">Quiz Completion Time</a>
-                            </li>
-                        </ul>
-                        <!-- /.nav-second-level -->
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-sitemap fa-fw"></i>Dropdown<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="#">Second Level Item</a>
-                            </li>
-                            <li>
-                                <a href="#">Second Level Item</a>
-                            </li>
-                            <li>
-                                <a href="#">Third Level <span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                </ul>
-                                <!-- /.nav-third-level -->
-                            </li>
-                        </ul>
-                        <!-- /.nav-second-level -->
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-files-o fa-fw"></i> Misc Pages<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="#">Blank Page</a>
-                            </li>
-                            <li>
-                                <a href="#">Login Page</a>
-                            </li>
-                        </ul>
-                        <!-- /.nav-second-level -->
-                    </li>
-                </ul>
-            </div>
-            <!-- /.sidebar-collapse -->
-        </div>
-        <!-- /.navbar-static-side -->
     </nav>
 
     <!-- Page Content -->

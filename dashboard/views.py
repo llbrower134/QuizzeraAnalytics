@@ -20,6 +20,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context['quiz_attempts_class'] = plots.attempts_class_plot(attempt_data)
         context['quiz_time_class'] = plots.completion_time_class_plot(attempt_data)
         context['quiz_stddev_class'] = plots.stddev_class_plot(attempt_data)
+        context['clusters_class'] = plots.kmeans_class_plot(attempt_data)
         return context
 
 class ProfileView(LoginRequiredMixin, TemplateView):

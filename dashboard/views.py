@@ -13,13 +13,13 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context = super(IndexView, self).get_context_data(**kwargs)
         context.update({'title': "Dashboard"})
 
-        quiz_data = datafetch.get_quiz_data()
+        quiz_titles = datafetch.get_quiz_titles()
         attempt_data = datafetch.get_attempt_data()
 
-        context['quiz_avg_class'] = plots.avgscore_class_plot(attempt_data)
-        context['quiz_attempts_class'] = plots.attempts_class_plot(attempt_data)
-        context['quiz_time_class'] = plots.completion_time_class_plot(attempt_data)
-        context['quiz_stddev_class'] = plots.stddev_class_plot(attempt_data)
+        context['quiz_avg_class'] = plots.avgscore_class_plot(attempt_data, quiz_titles)
+        context['quiz_attempts_class'] = plots.attempts_class_plot(attempt_data, quiz_titles)
+        context['quiz_time_class'] = plots.completion_time_class_plot(attempt_data, quiz_titles)
+        context['quiz_stddev_class'] = plots.stddev_class_plot(attempt_data, quiz_titles)
         context['clusters_class'] = plots.kmeans_class_plot(attempt_data)
         return context
 
@@ -30,21 +30,28 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         context = super(ProfileView, self).get_context_data(**kwargs)
         student_id = self.request.GET.get('student_id')
 
-        quiz_data = datafetch.get_quiz_data()
+        quiz_titles = datafetch.get_quiz_titles()
         attempt_data = datafetch.get_attempt_data()
 
         context['student_name'] = datafetch.get_student_name(student_id)
-        #context['student_name'] = "Lukas Brower"
-        context['net_id'] = student_id
-        #context['class_year'] = search.get_student_class(student_id)
-        context['class_year'] = "2017"
+        #context['net_id'] = student_id
+        #context['class_year'] = datafetch.get_student_class(student_id)
+        #context['class_year'] = "2017"
         #context['major'] = search.get_student_major(student_id)
         #context['image'] =
-        context['quiz_avg'] = random.randrange(70, 100)
-        context['quiz_avg_student'] = plots.avgscore_student_plot(attempt_data, student_id)
-        context['quiz_attempts_student'] = plots.attempts_student_plot(attempt_data, student_id)
-        context['quiz_time_student'] = plots.completion_time_student_plot(attempt_data, student_id)
+        context['quiz_avg_student'] = plots.avgscore_student_plot(attempt_data, quiz_titles, student_id)
+        context['quiz_attempts_student'] = plots.attempts_student_plot(attempt_data, quiz_titles, student_id)
+        context['quiz_time_student'] = plots.completion_time_student_plot(attempt_data, quiz_titles, student_id)
         context['student_id'] = self.request.GET.get('student_id')
+        return context
+
+class QuizView(LoginRequiredMixin, TemplateView):
+    template_name = "components/quiz.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(QuizView, self).get_context_data(**kwargs)
+
+        context['quiz_list'] = datafetch.get_quiz_data()
         return context
 
 ##################### Visual Specific Pages #####################

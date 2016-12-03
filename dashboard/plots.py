@@ -10,83 +10,106 @@ from plotly.offline import plot
 from sklearn.cluster import KMeans
 
 
-def avgscore_class_data(attempt_data):
-    # Map questions to users, and users to all grades for that question
-    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(list))
+def avgscore_class_data(attempt_data, quiz_titles):
+    # Map quizzes to questions, questions to users, and users to all grades for that question
+    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(list)))
 
     for attempt in attempt_data:
+        quiz = quiz_titles[attempt['question']['quiz']]
+        question = attempt['question']['title']
+        user = attempt['user']['username']
+        grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
+        quiz_grades[quiz][question][user].append(grade)
+
+    # Find averages by only considering the highest score across each student's attempts
+    quiz_averages = {}
+    for quiz, questions in quiz_grades.items():
+        quiz_averages[quiz] = 0
+        question_averages = {}
+        for question, users in questions.items():
+            question_averages[question] = 0
+            for user, grades in users.items():
+                question_averages[question] += max(grades)
+            question_averages[question] = question_averages[question] / len(users)
+        quiz_averages[quiz] = sum(avg for avg in question_averages.values()) / len(question_averages)
+        quiz_averages[quiz] = round(quiz_averages[quiz], 2)
+
+    return (list(quiz_averages.keys()), list(quiz_averages.values()))
+
+def attempts_class_data(attempt_data, quiz_titles):
+    # Map questions to users, and users to all grades for that question
+    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(int)))
+
+    for attempt in attempt_data:
+        quiz = quiz_titles[attempt['question']['quiz']]
+        title = attempt['question']['title']
+        user = attempt['user']['username']
+        quiz_grades[quiz][title][user] += 1
+
+    quiz_attempts = {}
+    for quiz, questions in quiz_grades.items():
+        quiz_attempts[quiz] = 0
+        question_attempts = {}
+        for question, users in questions.items():
+            question_attempts[question] = 0
+            for user, attempts in users.items():
+                question_attempts[question] += attempts
+            question_attempts[question] = question_attempts[question] / len(users)
+        quiz_attempts[quiz] = sum(attempts for attempts in question_attempts.values()) / len(question_attempts)
+        quiz_attempts[quiz] = round(quiz_attempts[quiz], 2)
+
+    return (list(quiz_attempts.keys()), list(quiz_attempts.values()))
+
+def completion_time_class_data(attempt_data, quiz_titles):
+    # Map questions to users, and users to all grades for that question
+    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(int)))
+
+    for attempt in attempt_data:
+        quiz = quiz_titles[attempt['question']['quiz']]
+        title = attempt['question']['title']
+        user = attempt['user']['username']
+        quiz_grades[quiz][title][user] += attempt['elapsed_seconds']
+
+    quiz_times = {}
+    for quiz, questions in quiz_grades.items():
+        quiz_times[quiz] = 0
+        question_times = {}
+        for question, users in questions.items():
+            question_times[question] = 0
+            for user, time in users.items():
+                question_times[question] += time
+            question_times[question] = question_times[question] / len(users)
+        quiz_times[quiz] = sum(attempts for attempts in question_times.values()) / len(question_times)
+        quiz_times[quiz] = round(quiz_times[quiz], 2)
+
+    return (list(quiz_times.keys()), list(quiz_times.values()))
+
+def stddev_class_data(attempt_data, quiz_titles):
+    # Map questions to users, and users to all grades for that question
+    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(list)))
+
+    for attempt in attempt_data:
+        quiz = quiz_titles[attempt['question']['quiz']]
         title = attempt['question']['title']
         user = attempt['user']['username']
         grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
-        quiz_grades[title][user].append(grade)
+        quiz_grades[quiz][title][user].append(grade)
 
     # Find averages by only considering the highest score across each student's attempts
-    averages = {}
-    for k, v in quiz_grades.items():
-        averages[k] = 0
-        for k2, v2 in v.items():
-            averages[k] += max(v2)
-        averages[k] = round((averages[k] / len(v)), 2)
+    quiz_stddev = {}
+    for quiz, questions in quiz_grades.items():
+        quiz_stddev[quiz] = 0
+        question_stddev = {}
+        averages = collections.defaultdict(list)
+        for question, users in questions.items():
+            question_stddev[question] = 0
+            for user, grades in users.items():
+                averages[question].append(max(grades))
+            question_stddev[question] = numpy.std(averages[question])
+        quiz_stddev[quiz] = sum(avg for avg in question_stddev.values()) / len(question_stddev)
+        quiz_stddev[quiz] = round(quiz_stddev[quiz], 2)
 
-    return (list(averages.keys()), list(averages.values()))
-
-def attempts_class_data(attempt_data):
-    # Map questions to users, and users to all grades for that question
-    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(int))
-
-    for attempt in attempt_data:
-        title = attempt['question']['title']
-        user = attempt['user']['username']
-        quiz_grades[title][user] += 1
-
-    # Find average number of attempts
-    attempts = {}
-    for k, v in quiz_grades.items():
-        attempts[k] = 0
-        for k2, v2 in v.items():
-            attempts[k] += v2
-        attempts[k] = round((float(attempts[k]) / len(v.items())), 2)
-
-    return (list(attempts.keys()), list(attempts.values()))
-
-def completion_time_class_data(attempt_data):
-    # Map questions to users, and users to all grades for that question
-    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(int))
-
-    for attempt in attempt_data:
-        title = attempt['question']['title']
-        user = attempt['user']['username']
-        quiz_grades[title][user] += attempt['elapsed_seconds']
-
-    # Find average number of attempts
-    times = {}
-    for k, v in quiz_grades.items():
-        times[k] = 0
-        for k2, v2 in v.items():
-            times[k] += v2
-        times[k] = round((float(times[k]) / len(v.items())), 2)
-
-    return (list(times.keys()), list(times.values()))
-
-def stddev_class_data(attempt_data):
-    # Map questions to users, and users to all grades for that question
-    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(list))
-
-    for attempt in attempt_data:
-        title = attempt['question']['title']
-        user = attempt['user']['username']
-        grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
-        quiz_grades[title][user].append(grade)
-
-    # Find averages by only considering the highest score across each student's attempts
-    averages = collections.defaultdict(list)
-    stddev = {}
-    for k, v in quiz_grades.items():
-        for k2, v2 in v.items():
-            averages[k].append(max(v2))
-        stddev[k] = numpy.std(averages[k])
-
-    return (list(stddev.keys()), list(stddev.values()))
+    return (list(quiz_stddev.keys()), list(quiz_stddev.values()))
 
 def kmeans_class_plot(attempt_data):
     quiz_grades = collections.defaultdict(lambda: collections.defaultdict(list))
@@ -153,62 +176,78 @@ def kmeans_class_plot(attempt_data):
 
 
 
-def avgscore_class_plot(attempt_data):
-    plot_data = avgscore_class_data(attempt_data)
+def avgscore_class_plot(quiz_titles, attempt_data):
+    plot_data = avgscore_class_data(quiz_titles, attempt_data)
     return get_class_plot(plot_data, False)
 
-def attempts_class_plot(attempt_data):
-    plot_data = attempts_class_data(attempt_data)
+def attempts_class_plot(attempt_data, quiz_titles):
+    plot_data = attempts_class_data(attempt_data, quiz_titles)
     return get_class_plot(plot_data, True)
 
-def completion_time_class_plot(attempt_data):
-    plot_data = completion_time_class_data(attempt_data)
+def completion_time_class_plot(attempt_data, quiz_titles):
+    plot_data = completion_time_class_data(attempt_data, quiz_titles)
     return get_class_plot(plot_data, True)
 
-def stddev_class_plot(attempt_data):
-    plot_data = stddev_class_data(attempt_data)
+def stddev_class_plot(attempt_data, quiz_titles):
+    plot_data = stddev_class_data(attempt_data, quiz_titles)
     return get_class_plot(plot_data, True)
 
 
-def avgscore_student_plot(attempt_data, student_id):
-    # Map quiz to all grades
-    averages = collections.defaultdict(int)
+def avgscore_student_plot(attempt_data, quiz_titles, student_id):
+    # Map quizzes to questions, questions to users, and users to all grades for that question
+    quiz_grades = collections.defaultdict(lambda: collections.defaultdict(int))
 
     for attempt in attempt_data:
         if attempt['user']['username'] == student_id:
-            quiz_index = attempt['question']['title']
+            quiz = quiz_titles[attempt['question']['quiz']]
+            question = attempt['question']['title']
             grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
-            if (grade > averages[quiz_index]):
-                averages[quiz_index] = (grade)
+            if (grade > quiz_grades[quiz][question]):
+                quiz_grades[quiz][question] = grade
 
-    class_data = avgscore_class_data(attempt_data)
-    student_data = (list(averages.keys()), list(averages.values()))
+    quiz_averages = {}
+    for quiz, questions in quiz_grades.items():
+        quiz_averages[quiz] = sum(grades for grades in questions.values()) / len(questions.values())
+        quiz_averages[quiz] = round(quiz_averages[quiz], 2)
+
+    class_data = avgscore_class_data(attempt_data, quiz_titles)
+    student_data = (list(quiz_averages.keys()), list(quiz_averages.values()))
     return get_student_plot(class_data, student_data, False)
 
-def attempts_student_plot(attempt_data, student_id):
-    # Map quiz to all grades
-    attempts = collections.defaultdict(int)
+def attempts_student_plot(attempt_data, quiz_titles, student_id):
+    quiz_attempts = collections.defaultdict(lambda: collections.defaultdict(int))
 
     for attempt in attempt_data:
         if attempt['user']['username'] == student_id:
-            quiz_index = attempt['question']['title']
-            attempts[quiz_index] += 1
+            quiz = quiz_titles[attempt['question']['quiz']]
+            question = attempt['question']['title']
+            quiz_attempts[quiz][question] += 1
 
-    class_data = attempts_class_data(attempt_data)
-    student_data = (list(attempts.keys()), list(attempts.values()))
+    average_attempts = {}
+    for quiz, questions in quiz_attempts.items():
+        average_attempts[quiz] = sum(grades for grades in questions.values()) / float(len(questions.values()))
+        average_attempts[quiz] = round(average_attempts[quiz], 2)
+
+    class_data = attempts_class_data(attempt_data, quiz_titles)
+    student_data = (list(average_attempts.keys()), list(average_attempts.values()))
     return get_student_plot(class_data, student_data, True)
 
-def completion_time_student_plot(attempt_data, student_id):
-    # Map quiz to all grades
-    times = collections.defaultdict(int)
+def completion_time_student_plot(attempt_data, quiz_titles, student_id):
+    quiz_attempts = collections.defaultdict(lambda: collections.defaultdict(int))
 
     for attempt in attempt_data:
         if attempt['user']['username'] == student_id:
-            quiz_index = attempt['question']['title']
-            times[quiz_index] += attempt['elapsed_seconds']
+            quiz = quiz_titles[attempt['question']['quiz']]
+            question = attempt['question']['title']
+            quiz_attempts[quiz][question] += attempt['elapsed_seconds']
 
-    class_data = completion_time_class_data(attempt_data)
-    student_data = (list(times.keys()), list(times.values()))
+    average_attempts = {}
+    for quiz, questions in quiz_attempts.items():
+        average_attempts[quiz] = sum(grades for grades in questions.values()) / float(len(questions.values()))
+        average_attempts[quiz] = round(average_attempts[quiz], 2)
+
+    class_data = completion_time_class_data(attempt_data, quiz_titles)
+    student_data = (list(average_attempts.keys()), list(average_attempts.values()))
     return get_student_plot(class_data, student_data, True)
 
 def get_class_plot(plot_data, autorange):

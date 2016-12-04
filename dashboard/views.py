@@ -1,7 +1,6 @@
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from . import plots
-from . import search
 from . import datafetch
 import random
 
@@ -50,8 +49,22 @@ class QuizView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(QuizView, self).get_context_data(**kwargs)
+        attempt_data = datafetch.get_attempt_data()
+        quiz_titles = list(datafetch.get_quiz_titles().values())
+        quiz_titles.sort()
+        context['quiz_list'] = quiz_titles
 
-        context['quiz_list'] = datafetch.get_quiz_data()
+        # Quiz to be displayed
+        quiz_title = self.request.GET.get('quiz_title')
+        context['quiz_title'] = quiz_title
+
+        if quiz_title != "" and quiz_title != None:
+            quiz_id = datafetch.quiz_title_to_id(quiz_title, datafetch.get_quiz_titles())
+            context['question_avg_class'] = plots.question_avgscore_class_plot(attempt_data, quiz_id)
+            context['question_attempts_class'] = plots.question_attempts_class_plot(attempt_data, quiz_id)
+            context['question_completion_time_class'] = plots.question_completion_time_class_plot(attempt_data, quiz_id)
+            context['question_stddev_class'] = plots.question_stddev_class_plot(attempt_data, quiz_id)
+
         return context
 
 ##################### Visual Specific Pages #####################

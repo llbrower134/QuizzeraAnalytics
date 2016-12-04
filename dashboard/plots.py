@@ -176,7 +176,7 @@ def kmeans_class_plot(attempt_data):
 
 
 
-def avgscore_class_plot(quiz_titles, attempt_data):
+def avgscore_class_plot(attempt_data, quiz_titles):
     plot_data = avgscore_class_data(quiz_titles, attempt_data)
     return get_class_plot(plot_data, False)
 
@@ -249,6 +249,101 @@ def completion_time_student_plot(attempt_data, quiz_titles, student_id):
     class_data = completion_time_class_data(attempt_data, quiz_titles)
     student_data = (list(average_attempts.keys()), list(average_attempts.values()))
     return get_student_plot(class_data, student_data, True)
+
+def question_avgscore_class_data(attempt_data, quiz_id):
+    question_grades = collections.defaultdict(lambda: collections.defaultdict(list))
+
+    for attempt in attempt_data:
+        if attempt['question']['quiz'] == quiz_id:
+            title = attempt['question']['title']
+            user = attempt['user']['username']
+            grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
+            question_grades[title][user].append(grade)
+
+    # Find averages by only considering the highest score across each student's attempts
+    averages = {}
+    for k, v in question_grades.items():
+        averages[k] = 0
+        for k2, v2 in v.items():
+            averages[k] += max(v2)
+        averages[k] = round((averages[k] / len(v)), 2)
+
+    return (list(averages.keys()), list(averages.values()))
+
+def question_attempts_class_data(attempt_data, quiz_id):
+    question_attempts = collections.defaultdict(lambda: collections.defaultdict(int))
+
+    for attempt in attempt_data:
+        if attempt['question']['quiz'] == quiz_id:
+            title = attempt['question']['title']
+            user = attempt['user']['username']
+            question_attempts[title][user] += 1
+
+    # Find average number of attempts
+    attempts = {}
+    for k, v in question_attempts.items():
+        attempts[k] = 0
+        for k2, v2 in v.items():
+            attempts[k] += v2
+        attempts[k] = round((float(attempts[k]) / len(v.items())), 2)
+
+    return (list(attempts.keys()), list(attempts.values()))
+
+def question_completion_time_class_data(attempt_data, quiz_id):
+    question_times = collections.defaultdict(lambda: collections.defaultdict(int))
+
+    for attempt in attempt_data:
+        if attempt['question']['quiz'] == quiz_id:
+            title = attempt['question']['title']
+            user = attempt['user']['username']
+            question_times[title][user] += attempt['elapsed_seconds']
+
+    # Find average number of attempts
+    times = {}
+    for k, v in question_times.items():
+        times[k] = 0
+        for k2, v2 in v.items():
+            times[k] += v2
+        times[k] = round((float(times[k]) / len(v.items())), 2)
+
+    return (list(times.keys()), list(times.values()))
+
+def question_stddev_class_data(attempt_data, quiz_id):
+    question_sttdev = collections.defaultdict(lambda: collections.defaultdict(list))
+
+    for attempt in attempt_data:
+        if attempt['question']['quiz'] == quiz_id:
+            title = attempt['question']['title']
+            user = attempt['user']['username']
+            grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
+            question_sttdev[title][user].append(grade)
+
+    # Find averages by only considering the highest score across each student's attempts
+    averages = collections.defaultdict(list)
+    stddev = {}
+    for k, v in question_sttdev.items():
+        for k2, v2 in v.items():
+            averages[k].append(max(v2))
+        stddev[k] = numpy.std(averages[k])
+
+    return (list(stddev.keys()), list(stddev.values()))
+
+
+def question_avgscore_class_plot(attempt_data, quiz_titles):
+    plot_data = question_avgscore_class_data(attempt_data, quiz_titles)
+    return get_class_plot(plot_data, False)
+
+def question_attempts_class_plot(attempt_data, quiz_titles):
+    plot_data = question_attempts_class_data(attempt_data, quiz_titles)
+    return get_class_plot(plot_data, True)
+
+def question_completion_time_class_plot(attempt_data, quiz_titles):
+    plot_data = question_completion_time_class_data(attempt_data, quiz_titles)
+    return get_class_plot(plot_data, True)
+
+def question_stddev_class_plot(attempt_data, quiz_titles):
+    plot_data = question_stddev_class_data(attempt_data, quiz_titles)
+    return get_class_plot(plot_data, True)
 
 def get_class_plot(plot_data, autorange):
     trace1 = go.Scatter(

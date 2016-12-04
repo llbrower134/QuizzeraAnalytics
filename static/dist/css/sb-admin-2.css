@@ -43,6 +43,12 @@ body {
     display: flex;
 }
 
+.quiz-selector-row-profile {
+    padding-top: 35px;
+    padding-left: 15px !important;
+    display: flex;
+}
+
 .search-input {
     width: 135px !important;
 }

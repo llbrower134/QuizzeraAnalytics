@@ -6,10 +6,10 @@
     <div class="row">
         <div class="quiz-selector-row">
             <h4> Select Quiz for Question Breakdown </h4>
-            <form method="get" action="{% url 'dashboard:quiz' %}">
+            <form method="get" action="{% url 'dashboard:profquiz' %}">
                 <select class="selectpicker quiz-selector" data-live-search="true" name="quiz_title" onChange="this.form.submit();"  title="Select Quiz">
                     {% for title in quiz_list %}
-                        <option value="{{ title }}">{{ title }}</option>
+                        <option value="{{student_id}}-{{title}}">{{ title }}</option>
                     {% endfor %}
                 </select>
             </form>
@@ -19,7 +19,7 @@
     {% if quiz_title != None and quiz_title != ""%}
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header"> {{quiz_title}} </h1>
+            <h1 class="page-header"> {{student_name}} - {{quiz_title}}</h1>
         </div>
     </div>
     <div class="row">
@@ -27,15 +27,15 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-bar-chart-o fa-fw"></i> Average Question Scores
-                    <div>{{question_avg_class|safe}}</div>
+                    <div>{{question_avg_student|safe}}</div>
                 </div>
             </div>
         </div>
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-bar-chart-o fa-fw"></i> Standard Deviation
-                    <div>{{question_stddev_class|safe}}</div>
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Average Question Attempts Per Student
+                    <div>{{question_attempts_student|safe}}</div>
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -46,17 +46,8 @@
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-bar-chart-o fa-fw"></i> Average Question Attempts Per Student
-                    <div>{{question_attempts_class|safe}}</div>
-                </div>
-                <!-- /.panel-body -->
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">
                     <i class="fa fa-bar-chart-o fa-fw"></i> Average Question Completion Time
-                    <div>{{question_time_class|safe}}</div>
+                    <div>{{question_completion_time_student|safe}}</div>
                 </div>
                 <!-- /.panel-body -->
             </div>

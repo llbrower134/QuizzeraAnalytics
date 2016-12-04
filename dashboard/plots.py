@@ -177,7 +177,7 @@ def kmeans_class_plot(attempt_data):
 
 
 def avgscore_class_plot(attempt_data, quiz_titles):
-    plot_data = avgscore_class_data(quiz_titles, attempt_data)
+    plot_data = avgscore_class_data(attempt_data, quiz_titles)
     return get_class_plot(plot_data, False)
 
 def attempts_class_plot(attempt_data, quiz_titles):
@@ -329,21 +329,59 @@ def question_stddev_class_data(attempt_data, quiz_id):
     return (list(stddev.keys()), list(stddev.values()))
 
 
-def question_avgscore_class_plot(attempt_data, quiz_titles):
-    plot_data = question_avgscore_class_data(attempt_data, quiz_titles)
+def question_avgscore_class_plot(attempt_data, quiz_id):
+    plot_data = question_avgscore_class_data(attempt_data, quiz_id)
     return get_class_plot(plot_data, False)
 
-def question_attempts_class_plot(attempt_data, quiz_titles):
-    plot_data = question_attempts_class_data(attempt_data, quiz_titles)
+def question_attempts_class_plot(attempt_data, quiz_id):
+    plot_data = question_attempts_class_data(attempt_data, quiz_id)
     return get_class_plot(plot_data, True)
 
-def question_completion_time_class_plot(attempt_data, quiz_titles):
-    plot_data = question_completion_time_class_data(attempt_data, quiz_titles)
+def question_completion_time_class_plot(attempt_data, quiz_id):
+    plot_data = question_completion_time_class_data(attempt_data, quiz_id)
     return get_class_plot(plot_data, True)
 
-def question_stddev_class_plot(attempt_data, quiz_titles):
-    plot_data = question_stddev_class_data(attempt_data, quiz_titles)
+def question_stddev_class_plot(attempt_data, quiz_id):
+    plot_data = question_stddev_class_data(attempt_data, quiz_id)
     return get_class_plot(plot_data, True)
+
+def question_avgscore_student(attempt_data, quiz_id, student_id):
+    averages = collections.defaultdict(int)
+
+    for attempt in attempt_data:
+        if attempt['user']['username'] == student_id and attempt['question']['quiz'] == quiz_id:
+            quiz_index = attempt['question']['title']
+            grade = float(attempt['score']) / float(attempt['question']['max_score']) * 100
+            if (grade > averages[quiz_index]):
+                averages[quiz_index] = (grade)
+
+    class_data = question_avgscore_class_data(attempt_data, quiz_id)
+    student_data = (list(averages.keys()), list(averages.values()))
+    return get_student_plot(class_data, student_data, False)
+
+def question_attempts_student(attempt_data, quiz_id, student_id):
+    attempts = collections.defaultdict(int)
+
+    for attempt in attempt_data:
+        if attempt['user']['username'] == student_id and attempt['question']['quiz'] == quiz_id:
+            quiz_index = attempt['question']['title']
+            attempts[quiz_index] += 1
+
+    class_data = question_attempts_class_data(attempt_data, quiz_id)
+    student_data = (list(attempts.keys()), list(attempts.values()))
+    return get_student_plot(class_data, student_data, True)
+
+def question_completion_time_student(attempt_data, quiz_id, student_id):
+    times = collections.defaultdict(int)
+
+    for attempt in attempt_data:
+        if attempt['user']['username'] == student_id and attempt['question']['quiz'] == quiz_id:
+            quiz_index = attempt['question']['title']
+            times[quiz_index] += attempt['elapsed_seconds']
+
+    class_data = question_completion_time_class_data(attempt_data, quiz_id)
+    student_data = (list(times.keys()), list(times.values()))
+    return get_student_plot(class_data, student_data, True)
 
 def get_class_plot(plot_data, autorange):
     trace1 = go.Scatter(
@@ -415,3 +453,7 @@ def get_student_plot(class_data, student_data, autorange):
     fig = go.Figure(data=data, layout=layout)
     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
     return plot_div
+
+# Sort items in dict based on lexicographic order of keys
+def get_sorted_items(dict):
+

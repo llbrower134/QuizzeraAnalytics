@@ -34,7 +34,8 @@ def avgscore_class_data(attempt_data, quiz_titles):
         quiz_averages[quiz] = sum(avg for avg in question_averages.values()) / len(question_averages)
         quiz_averages[quiz] = round(quiz_averages[quiz], 2)
 
-    return (list(quiz_averages.keys()), list(quiz_averages.values()))
+
+    return get_sorted_items(list(quiz_averages.keys()), list(quiz_averages.values()))
 
 def attempts_class_data(attempt_data, quiz_titles):
     # Map questions to users, and users to all grades for that question
@@ -58,7 +59,7 @@ def attempts_class_data(attempt_data, quiz_titles):
         quiz_attempts[quiz] = sum(attempts for attempts in question_attempts.values()) / len(question_attempts)
         quiz_attempts[quiz] = round(quiz_attempts[quiz], 2)
 
-    return (list(quiz_attempts.keys()), list(quiz_attempts.values()))
+    return get_sorted_items(list(quiz_attempts.keys()), list(quiz_attempts.values()))
 
 def completion_time_class_data(attempt_data, quiz_titles):
     # Map questions to users, and users to all grades for that question
@@ -82,7 +83,7 @@ def completion_time_class_data(attempt_data, quiz_titles):
         quiz_times[quiz] = sum(attempts for attempts in question_times.values()) / len(question_times)
         quiz_times[quiz] = round(quiz_times[quiz], 2)
 
-    return (list(quiz_times.keys()), list(quiz_times.values()))
+    return get_sorted_items(list(quiz_times.keys()), list(quiz_times.values()))
 
 def stddev_class_data(attempt_data, quiz_titles):
     # Map questions to users, and users to all grades for that question
@@ -109,7 +110,7 @@ def stddev_class_data(attempt_data, quiz_titles):
         quiz_stddev[quiz] = sum(avg for avg in question_stddev.values()) / len(question_stddev)
         quiz_stddev[quiz] = round(quiz_stddev[quiz], 2)
 
-    return (list(quiz_stddev.keys()), list(quiz_stddev.values()))
+    return get_sorted_items(list(quiz_stddev.keys()), list(quiz_stddev.values()))
 
 def kmeans_class_plot(attempt_data):
     quiz_grades = collections.defaultdict(lambda: collections.defaultdict(list))
@@ -211,7 +212,7 @@ def avgscore_student_plot(attempt_data, quiz_titles, student_id):
         quiz_averages[quiz] = round(quiz_averages[quiz], 2)
 
     class_data = avgscore_class_data(attempt_data, quiz_titles)
-    student_data = (list(quiz_averages.keys()), list(quiz_averages.values()))
+    student_data = get_sorted_items(list(quiz_averages.keys()), list(quiz_averages.values()))
     return get_student_plot(class_data, student_data, False)
 
 def attempts_student_plot(attempt_data, quiz_titles, student_id):
@@ -229,7 +230,7 @@ def attempts_student_plot(attempt_data, quiz_titles, student_id):
         average_attempts[quiz] = round(average_attempts[quiz], 2)
 
     class_data = attempts_class_data(attempt_data, quiz_titles)
-    student_data = (list(average_attempts.keys()), list(average_attempts.values()))
+    student_data = get_sorted_items(list(average_attempts.keys()), list(average_attempts.values()))
     return get_student_plot(class_data, student_data, True)
 
 def completion_time_student_plot(attempt_data, quiz_titles, student_id):
@@ -247,7 +248,7 @@ def completion_time_student_plot(attempt_data, quiz_titles, student_id):
         average_attempts[quiz] = round(average_attempts[quiz], 2)
 
     class_data = completion_time_class_data(attempt_data, quiz_titles)
-    student_data = (list(average_attempts.keys()), list(average_attempts.values()))
+    student_data = get_sorted_items(list(average_attempts.keys()), list(average_attempts.values()))
     return get_student_plot(class_data, student_data, True)
 
 def question_avgscore_class_data(attempt_data, quiz_id):
@@ -268,7 +269,7 @@ def question_avgscore_class_data(attempt_data, quiz_id):
             averages[k] += max(v2)
         averages[k] = round((averages[k] / len(v)), 2)
 
-    return (list(averages.keys()), list(averages.values()))
+    return get_sorted_items(list(averages.keys()), list(averages.values()))
 
 def question_attempts_class_data(attempt_data, quiz_id):
     question_attempts = collections.defaultdict(lambda: collections.defaultdict(int))
@@ -287,7 +288,7 @@ def question_attempts_class_data(attempt_data, quiz_id):
             attempts[k] += v2
         attempts[k] = round((float(attempts[k]) / len(v.items())), 2)
 
-    return (list(attempts.keys()), list(attempts.values()))
+    return get_sorted_items(list(attempts.keys()), list(attempts.values()))
 
 def question_completion_time_class_data(attempt_data, quiz_id):
     question_times = collections.defaultdict(lambda: collections.defaultdict(int))
@@ -306,7 +307,7 @@ def question_completion_time_class_data(attempt_data, quiz_id):
             times[k] += v2
         times[k] = round((float(times[k]) / len(v.items())), 2)
 
-    return (list(times.keys()), list(times.values()))
+    return get_sorted_items(list(times.keys()), list(times.values()))
 
 def question_stddev_class_data(attempt_data, quiz_id):
     question_sttdev = collections.defaultdict(lambda: collections.defaultdict(list))
@@ -326,7 +327,7 @@ def question_stddev_class_data(attempt_data, quiz_id):
             averages[k].append(max(v2))
         stddev[k] = numpy.std(averages[k])
 
-    return (list(stddev.keys()), list(stddev.values()))
+    return get_sorted_items(list(stddev.keys()), list(stddev.values()))
 
 
 def question_avgscore_class_plot(attempt_data, quiz_id):
@@ -356,7 +357,7 @@ def question_avgscore_student(attempt_data, quiz_id, student_id):
                 averages[quiz_index] = (grade)
 
     class_data = question_avgscore_class_data(attempt_data, quiz_id)
-    student_data = (list(averages.keys()), list(averages.values()))
+    student_data = get_sorted_items(list(averages.keys()), list(averages.values()))
     return get_student_plot(class_data, student_data, False)
 
 def question_attempts_student(attempt_data, quiz_id, student_id):
@@ -368,7 +369,7 @@ def question_attempts_student(attempt_data, quiz_id, student_id):
             attempts[quiz_index] += 1
 
     class_data = question_attempts_class_data(attempt_data, quiz_id)
-    student_data = (list(attempts.keys()), list(attempts.values()))
+    student_data = get_sorted_items(list(attempts.keys()), list(attempts.values()))
     return get_student_plot(class_data, student_data, True)
 
 def question_completion_time_student(attempt_data, quiz_id, student_id):
@@ -380,7 +381,7 @@ def question_completion_time_student(attempt_data, quiz_id, student_id):
             times[quiz_index] += attempt['elapsed_seconds']
 
     class_data = question_completion_time_class_data(attempt_data, quiz_id)
-    student_data = (list(times.keys()), list(times.values()))
+    student_data = get_sorted_items(list(times.keys()), list(times.values()))
     return get_student_plot(class_data, student_data, True)
 
 def get_class_plot(plot_data, autorange):
@@ -454,6 +455,12 @@ def get_student_plot(class_data, student_data, autorange):
     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
     return plot_div
 
-# Sort items in dict based on lexicographic order of keys
-def get_sorted_items(dict):
+# Sort keys and values based on lexicographic order of keys
+def get_sorted_items(keys, values):
+    pairs = []
+    for i in range(len(keys)):
+        pairs.append((keys[i], values[i]))
+
+    sorted_pairs = sorted(pairs, key=lambda tup: tup[0])
+    return list(zip(*sorted_pairs))
 

@@ -5,7 +5,7 @@
 <div>
     <div class="row">
         <div class="quiz-selector-row">
-            <h4> Select Quiz for Question Breakdown </h4>
+           <h4> Select Quiz for Question Breakdown </h4>
             <form method="get" action="{% url 'dashboard:quiz' %}">
                 <select class="selectpicker quiz-selector" data-live-search="true" name="quiz_title" onChange="this.form.submit();"  title="Select Quiz">
                     {% for title in quiz_list %}

@@ -35,13 +35,17 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         titles_list = list(datafetch.get_quiz_titles().values())
         titles_list.sort()
 
-        context['quiz_list'] = titles_list
+        student_name = datafetch.get_student_name(student_id)
         context['student_id'] = student_id
-        context['student_name'] = datafetch.get_student_name(student_id)
-        context['quiz_avg_student'] = plots.avgscore_student_plot(attempt_data, quiz_titles, student_id)
-        context['quiz_attempts_student'] = plots.attempts_student_plot(attempt_data, quiz_titles, student_id)
-        context['quiz_time_student'] = plots.completion_time_student_plot(attempt_data, quiz_titles, student_id)
-        context['student_id'] = self.request.GET.get('student_id')
+
+        if student_name != "":
+            context['quiz_list'] = titles_list
+            context['student_id'] = student_id
+            context['student_name'] = datafetch.get_student_name(student_id)
+            context['quiz_avg_student'] = plots.avgscore_student_plot(attempt_data, quiz_titles, student_id)
+            context['quiz_attempts_student'] = plots.attempts_student_plot(attempt_data, quiz_titles, student_id)
+            context['quiz_time_student'] = plots.completion_time_student_plot(attempt_data, quiz_titles, student_id)
+            context['student_id'] = self.request.GET.get('student_id')
         return context
 
 class QuizView(LoginRequiredMixin, TemplateView):
@@ -50,9 +54,10 @@ class QuizView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(QuizView, self).get_context_data(**kwargs)
         attempt_data = datafetch.get_attempt_data()
-        quiz_titles = list(datafetch.get_quiz_titles().values())
-        quiz_titles.sort()
-        context['quiz_list'] = quiz_titles
+
+        titles_list = list(datafetch.get_quiz_titles().values())
+        titles_list.sort()
+        context['quiz_list'] = titles_list
 
         # Quiz to be displayed
         quiz_title = self.request.GET.get('quiz_title')
@@ -65,7 +70,7 @@ class QuizView(LoginRequiredMixin, TemplateView):
             context['question_completion_time_class'] = plots.question_completion_time_class_plot(attempt_data, quiz_id)
             context['question_stddev_class'] = plots.question_stddev_class_plot(attempt_data, quiz_id)
 
-        return
+        return context
 
 class ProfileQuizView(LoginRequiredMixin, TemplateView):
     template_name = "components/profile-quiz.html"
@@ -92,31 +97,3 @@ class ProfileQuizView(LoginRequiredMixin, TemplateView):
             context['question_completion_time_student'] = plots.question_completion_time_student(attempt_data, quiz_id, student_id)
 
         return context
-
-##################### Visual Specific Pages #####################
-
-class QuizAvgView(TemplateView):
-    template_name = "components/quizavg.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(QuizAvgView, self).get_context_data(**kwargs)
-        context['plot'] = plots.avg_score_class()
-        return context
-
-class QuizAttemptsView(TemplateView):
-    template_name = "components/quizavg.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(QuizAvgView, self).get_context_data(**kwargs)
-        context['plot'] = plots.attempts_class()
-        return context
-
-class QuizTimeView(TemplateView):
-    template_name = "components/quizavg.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(QuizAvgView, self).get_context_data(**kwargs)
-        context['plot'] = plots.completion_time_class()
-        return context
-
-###############################################################
